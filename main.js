@@ -1,36 +1,66 @@
+//AXIOS GLOBAL
+axios.defaults.headers.common['X-Auth-Token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30';
+
+
+
 // GET REQUEST
 function getTodos() {
-  console.log('GET Request');
+    axios.get('https://jsonplaceholder.typicode.com/todos?_limit=5')
+        .then(res => showOutput(res))
+        .catch(err => console.error(err));
 }
 
 // POST REQUEST
 function addTodo() {
-  console.log('POST Request');
+   axios.post('https://jsonplaceholder.typicode.com/todos', {
+        title: 'New Todo',
+        completed: false
+    })
+    .then(res => showOutput(res))
+    .catch(err => console.error(err));
 }
 
 // PUT/PATCH REQUEST
 function updateTodo() {
-  console.log('PUT/PATCH Request');
+  axios.patch('https://jsonplaceholder.typicode.com/todos/1', {
+        title: 'Updated Todo',
+        completed: true
+    })
+    .then(res => showOutput(res))
+    .catch(err => console.error(err));
 }
 
 // DELETE REQUEST
 function removeTodo() {
-  console.log('DELETE Request');
+  axios.delete('https://jsonplaceholder.typicode.com/todos/1')
+    .then(res => showOutput(res))
+    .catch(err => console.error(err));
 }
 
 // SIMULTANEOUS DATA
 function getData() {
-  console.log('Simultaneous Request');
+  axios.all([
+    axios.get('https://jsonplaceholder.typicode.com/todos?_limit=5'),
+    axios.get('https://jsonplaceholder.typicode.com/posts?_limit=5'),
+  ])
+  .then(axios.spread((todos, posts) => showOutput(posts)))
+  .catch(err => console.error(err));
 }
 
 // CUSTOM HEADERS
 function customHeaders() {
-  console.log('Custom Headers');
-}
-
-// TRANSFORMING REQUESTS & RESPONSES
-function transformResponse() {
-  console.log('Transform Response');
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'sometoken'
+        }
+    }
+    axios.post('https://jsonplaceholder.typicode.com/todos', {
+            title: 'New Todo',
+            completed: false
+        }, config)
+        .then(res => showOutput(res))
+        .catch(err => console.error(err));
 }
 
 // ERROR HANDLING
@@ -44,7 +74,10 @@ function cancelToken() {
 }
 
 // INTERCEPTING REQUESTS & RESPONSES
-
+axios.interceptors.request.use(config => {
+    console.log(`${config.method.toUpperCase()} request sent to ${config.url} at ${new Date().getTime()}`);
+    return config;
+}, error => {return Promise.reject(error);});
 // AXIOS INSTANCES
 
 // Show output in browser
